@@ -1,9 +1,7 @@
 package com.example.bio_auth
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -69,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)) {
 
             BiometricManager.BIOMETRIC_SUCCESS -> {
-                showAlertDialog("Biometric authentication is Available")
+                showMessage("Biometric authentication is Available!")
                 return true
             }
 
@@ -113,8 +111,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
                     // Handle authentication success
-                    showAlertDialog("Authentication succeeded!")
-
+                    showMessage("Authentication succeeded!")
                     moveHomePage()
                 }
 
@@ -127,25 +124,21 @@ class MainActivity : AppCompatActivity() {
 
         biometricPrompt.authenticate(promptInfo)
     }
-
-
-    private fun showMessage(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
     private fun showAlertDialog(message: String) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
         alertDialogBuilder.setTitle("Biometric Authentication")
         alertDialogBuilder.setMessage(message)
-        alertDialogBuilder.setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+        alertDialogBuilder.setPositiveButton("OK") { dialog, _ ->
             dialog.dismiss()
-        })
+        }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
     }
-
+    private fun showMessage(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
     private fun moveHomePage() {
         startActivity(Intent(this, HomeActivity::class.java))
     }
