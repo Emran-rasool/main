@@ -55,91 +55,18 @@ class MainActivity : AppCompatActivity() {
 
         }
         biometricAuthBTN.setOnClickListener {
-            if (isBiometricSupported()) {
-                showBiometricPrompt()
+            if (BiometricAuthentication.isBiometricSupported(applicationContext)) {
+                BiometricAuthentication.showBiometricPrompt(
+                    this@MainActivity,
+                    "Biometric Authentication"
+                )
             }
         }
 
     }
 
-    private fun isBiometricSupported(): Boolean {
-        val biometricManager = BiometricManager.from(this)
-        when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)) {
-
-            BiometricManager.BIOMETRIC_SUCCESS -> {
-                showMessage("Biometric authentication is Available!")
-                return true
-            }
-
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-                showAlertDialog("Biometric Hardware is not Available")
-                return false
-            }
-
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
-                showAlertDialog("Biometric authentication is currently Unavailable")
-                return false
-            }
-
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                showAlertDialog("No biometric credentials are Enrolled")
-                return false
-            }
-
-            else -> {
-                // Biometric status unknown or another error occurred
-                return false
-            }
-        }
-    }
-
-    private fun showBiometricPrompt() {
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric Authentication")
-            .setSubtitle("Log in using your biometric credential")
-            .setNegativeButtonText("Cancel")
-            .build()
-
-        val biometricPrompt = BiometricPrompt(this, ContextCompat.getMainExecutor(this),
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    super.onAuthenticationError(errorCode, errString)
-                    // Handle authentication error
-                    showAlertDialog("Authentication error: $errString")
-                }
-
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-                    // Handle authentication success
-                    showMessage("Authentication succeeded!")
-                    moveHomePage()
-                }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                    // Handle authentication failure
-                    showAlertDialog("Biometric is registered but not authorised with Current User.")
-                }
-            })
-
-        biometricPrompt.authenticate(promptInfo)
-    }
-    private fun showAlertDialog(message: String) {
-        val alertDialogBuilder = AlertDialog.Builder(this)
-
-        alertDialogBuilder.setTitle("Biometric Authentication")
-        alertDialogBuilder.setMessage(message)
-        alertDialogBuilder.setPositiveButton("OK") { dialog, _ ->
-            dialog.dismiss()
-        }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-    }
     private fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
-    private fun moveHomePage() {
-        startActivity(Intent(this, HomeActivity::class.java))
-    }
+
 }
